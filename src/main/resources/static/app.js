@@ -1,7 +1,7 @@
 var stompClient = null;
 var urlPrefix;
 var sockJSUrl;
-var subscribePath;
+var greetingsSubscribePath;
 var sendPath;
 
 function setConnected(connected) {
@@ -22,7 +22,10 @@ function connect() {
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe(subscribePath, function (greeting) {
+        stompClient.subscribe(greetingsSubscribePath, function (greeting) {
+            showGreeting(JSON.parse(greeting.body).content);
+        });
+        stompClient.subscribe("/topic/secret", function (greeting) {
             showGreeting(JSON.parse(greeting.body).content);
         });
     });
@@ -46,10 +49,10 @@ function showGreeting(message) {
 
 $(function () {
     urlPrefix = window.location.protocol + "//" + window.location.host + window.location.pathname;
-    sockJSUrl = urlPrefix + "gs-guide-websocket";
-    subscribePath = "/topic/greetings";
+    sockJSUrl = urlPrefix + "xiyuan-websocket";
+    greetingsSubscribePath = "/topic/greetings";
     sendPath = "/app/hello";
-    console.log("[url & path]\n" + sockJSUrl + "\n" + subscribePath + "\n" + sendPath);
+    console.log("[url & path]\n" + sockJSUrl + "\n" + greetingsSubscribePath + "\n" + sendPath);
     $("form").on('submit', function (e) {
         e.preventDefault();
     });
