@@ -48,8 +48,24 @@ function showGreeting(message) {
 }
 
 $(function () {
-    urlPrefix = window.location.protocol + "//" + window.location.host + window.location.pathname;
-    sockJSUrl = urlPrefix + "xiyuan-websocket";
+    var pathStr = window.location.pathname;
+    var i;
+    //找到非首字母的"/"符号，截取之前的子字符串(即打包为war时的war包命名)
+    for (i = 1; i < pathStr.length; i++) {
+        if (pathStr[i] === "/") {
+            break;
+        }
+    }
+    pathStr = pathStr.substr(0, i);
+    //如果长度为1，说明为一个"/"，则直接将pathStr省略为""
+    //如果截取后的结尾名为".html"，说明直接运行到了8080端口，而非war包之中，则直接将pathStr省略为""
+    if (pathStr.length === 1) {
+        pathStr = "";
+    } else if (pathStr.length >= 5 && pathStr.substr(pathStr.length - 5, 5) === ".html") {
+        pathStr = "";
+    }
+    urlPrefix = window.location.protocol + "//" + window.location.host + pathStr;
+    sockJSUrl = urlPrefix + "/xiyuan-websocket";
     greetingsSubscribePath = "/topic/greetings";
     sendPath = "/app/hello";
     console.log("[url & path]\n" + sockJSUrl + "\n" + greetingsSubscribePath + "\n" + sendPath);
